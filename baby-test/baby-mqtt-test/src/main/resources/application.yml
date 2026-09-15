@@ -1,0 +1,19 @@
+spring:
+  application:
+    name: baby-mqtt-test
+
+baby:
+  mqtt:
+    enabled: true
+    broker: tcp://1.95.78.244:1883
+    username:
+    password:
+    client-id: baby-mqtt-test
+    auto-reconnect: true
+    connection-timeout: 10
+    keep-alive: 60
+    matcher-type: trie
+    subscriptions:
+      - name: robotSleep
+        topic: produce/+/robot_sleep_mode/+
+        handler: testMqttHandler

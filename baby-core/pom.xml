@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+                             https://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <!-- ========================================================= -->
+    <!-- 父工程 -->
+    <!-- ========================================================= -->
+
+    <parent>
+        <groupId>baby.top</groupId>
+        <artifactId>dependency-management</artifactId>
+        <version>1.0.0</version>
+        <relativePath>../dependency-management/pom.xml</relativePath>
+    </parent>
+
+
+    <!-- ========================================================= -->
+    <!-- 基础信息 -->
+    <!-- ========================================================= -->
+
+    <artifactId>baby-core</artifactId>
+    <version>1.0.0</version>
+
+    <name>baby-core</name>
+    <description>Baby Middleware Core</description>
+
+
+    <!-- ========================================================= -->
+    <!-- 依赖 -->
+    <!-- ========================================================= -->
+
+    <dependencies>
+
+        <!-- Lombok -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- JUnit -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+    </dependencies>
+
+</project>

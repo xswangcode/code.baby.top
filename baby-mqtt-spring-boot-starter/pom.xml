@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+                             https://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <!-- ========================================================= -->
+    <!-- 父 POM -->
+    <!-- ========================================================= -->
+
+    <parent>
+        <groupId>baby.top</groupId>
+        <artifactId>dependency-management</artifactId>
+        <version>1.0.0</version>
+        <relativePath>../dependency-management/pom.xml</relativePath>
+    </parent>
+
+
+    <!-- ========================================================= -->
+    <!-- 基础信息 -->
+    <!-- ========================================================= -->
+
+    <artifactId>baby-mqtt-spring-boot-starter</artifactId>
+    <version>1.0.0</version>
+
+    <name>baby-mqtt-spring-boot-starter</name>
+    <description>Baby MQTT Spring Boot Starter</description>
+
+
+    <!-- ========================================================= -->
+    <!-- 依赖 -->
+    <!-- ========================================================= -->
+
+    <dependencies>
+
+        <!-- ===================================================== -->
+        <!-- Baby Core -->
+        <!-- ===================================================== -->
+
+        <dependency>
+            <groupId>baby.top</groupId>
+            <artifactId>baby-core</artifactId>
+        </dependency>
+
+
+        <!-- ===================================================== -->
+        <!-- Spring Boot AutoConfiguration -->
+        <!-- ===================================================== -->
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-autoconfigure</artifactId>
+        </dependency>
+
+
+        <!-- ===================================================== -->
+        <!-- Spring Integration MQTT -->
+        <!-- ===================================================== -->
+
+        <dependency>
+            <groupId>org.springframework.integration</groupId>
+            <artifactId>spring-integration-mqtt</artifactId>
+        </dependency>
+
+        <!-- ===================================================== -->
+        <!-- Eclipse Paho MQTT Client -->
+        <!-- ===================================================== -->
+
+        <dependency>
+            <groupId>org.eclipse.paho</groupId>
+            <artifactId>org.eclipse.paho.client.mqttv3</artifactId>
+        </dependency>
+
+
+        <!-- ===================================================== -->
+        <!-- SLF4J -->
+        <!-- ===================================================== -->
+
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+
+
+        <!-- ===================================================== -->
+        <!-- Lombok -->
+        <!-- ===================================================== -->
+
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+
+        <!-- ===================================================== -->
+        <!-- Test -->
+        <!-- ===================================================== -->
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>javax.annotation</groupId>
+            <artifactId>javax.annotation-api</artifactId>
+        </dependency>
+
+    </dependencies>
+
+</project>
