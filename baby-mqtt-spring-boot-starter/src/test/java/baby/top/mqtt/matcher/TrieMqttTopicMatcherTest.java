@@ -1,6 +1,7 @@
 package baby.top.mqtt.matcher;
 
 import baby.top.mqtt.handler.MqttHandler;
+import baby.top.mqtt.handler.MqttMessageContext;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -511,9 +512,7 @@ public class TrieMqttTopicMatcherTest {
         }
 
         @Override
-        public void handle(
-                String topic,
-                String payload) {
+        public void handle(MqttMessageContext context) {
             // 测试类无需实际处理消息
         }
     }

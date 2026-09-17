@@ -28,18 +28,13 @@ public class TrieMqttTopicMatcher implements MqttTopicMatcher {
     private int handlerCount = 0;
 
     @Override
-    public void register(
-            String topic,
-            MqttHandler handler) {
+    public void register(String topic, MqttHandler handler) {
 
-        if (topic == null
-                || topic.length() == 0
-                || handler == null) {
+        if (topic == null || topic.length() == 0 || handler == null) {
             return;
         }
 
-        String[] levels =
-                topic.split("/", -1);
+        String[] levels = topic.split("/", -1);
 
         Node current = root;
 
@@ -77,8 +72,7 @@ public class TrieMqttTopicMatcher implements MqttTopicMatcher {
             /**
              * 普通 Topic 层级
              */
-            Node next =
-                    current.children.get(level);
+            Node next = current.children.get(level);
 
             if (next == null) {
                 next = new Node();
@@ -94,26 +88,17 @@ public class TrieMqttTopicMatcher implements MqttTopicMatcher {
     }
 
     @Override
-    public List<MqttHandler> findHandlers(
-            String topic) {
+    public List<MqttHandler> findHandlers(String topic) {
 
-        List<MqttHandler> result =
-                new ArrayList<MqttHandler>();
+        List<MqttHandler> result = new ArrayList<MqttHandler>();
 
-        if (topic == null
-                || topic.length() == 0) {
+        if (topic == null || topic.length() == 0) {
             return result;
         }
 
-        String[] levels =
-                topic.split("/", -1);
+        String[] levels = topic.split("/", -1);
 
-        find(
-                root,
-                levels,
-                0,
-                result
-        );
+        find(root, levels, 0, result);
 
         return result;
     }
@@ -121,11 +106,7 @@ public class TrieMqttTopicMatcher implements MqttTopicMatcher {
     /**
      * Trie 递归匹配
      */
-    private void find(
-            Node node,
-            String[] topicLevels,
-            int index,
-            List<MqttHandler> result) {
+    private void find(Node node, String[] topicLevels, int index, List<MqttHandler> result) {
 
         if (node == null) {
             return;
@@ -141,31 +122,22 @@ public class TrieMqttTopicMatcher implements MqttTopicMatcher {
 
             // # 可以匹配剩余任意层
             if (node.hashNode != null) {
-                result.addAll(
-                        node.hashNode.handlers
-                );
+                result.addAll(node.hashNode.handlers);
             }
 
             return;
         }
 
-        String currentLevel =
-                topicLevels[index];
+        String currentLevel = topicLevels[index];
 
         /**
          * 1. 普通字符串匹配
          */
-        Node normalNode =
-                node.children.get(currentLevel);
+        Node normalNode = node.children.get(currentLevel);
 
         if (normalNode != null) {
 
-            find(
-                    normalNode,
-                    topicLevels,
-                    index + 1,
-                    result
-            );
+            find(normalNode, topicLevels, index + 1, result);
         }
 
         /**
@@ -173,12 +145,7 @@ public class TrieMqttTopicMatcher implements MqttTopicMatcher {
          */
         if (node.plusNode != null) {
 
-            find(
-                    node.plusNode,
-                    topicLevels,
-                    index + 1,
-                    result
-            );
+            find(node.plusNode, topicLevels, index + 1, result);
         }
 
         /**
@@ -186,9 +153,7 @@ public class TrieMqttTopicMatcher implements MqttTopicMatcher {
          */
         if (node.hashNode != null) {
 
-            result.addAll(
-                    node.hashNode.handlers
-            );
+            result.addAll(node.hashNode.handlers);
         }
     }
 
@@ -205,13 +170,11 @@ public class TrieMqttTopicMatcher implements MqttTopicMatcher {
         /**
          * 普通 Topic 层级
          */
-        private final Map<String, Node> children =
-                new HashMap<String, Node>();
+        private final Map<String, Node> children = new HashMap<String, Node>();
         /**
          * 当前节点对应的 Handler
          */
-        private final List<MqttHandler> handlers =
-                new ArrayList<MqttHandler>();
+        private final List<MqttHandler> handlers = new ArrayList<MqttHandler>();
         /**
          * + 单层通配符节点
          */

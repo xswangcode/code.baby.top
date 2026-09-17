@@ -3,6 +3,7 @@ package baby.top.mqtt.integration;
 import baby.top.mqtt.autoconfigure.BabyMqttAutoConfiguration;
 import baby.top.mqtt.handler.MqttHandler;
 import baby.top.mqtt.handler.MqttHandlerRegistry;
+import baby.top.mqtt.handler.MqttMessageContext;
 import baby.top.mqtt.matcher.TrieMqttTopicMatcher;
 import baby.top.mqtt.properties.BabyMqttProperties;
 import baby.top.mqtt.template.BabyMqttTemplate;
@@ -184,9 +185,7 @@ public class BabyMqttAutoConfigurationEnabledTest {
                 }
 
                 @Override
-                public void handle(
-                        String topic,
-                        String payload) {
+                public void handle(MqttMessageContext context) {
                     // 测试无需处理实际消息
                 }
             };

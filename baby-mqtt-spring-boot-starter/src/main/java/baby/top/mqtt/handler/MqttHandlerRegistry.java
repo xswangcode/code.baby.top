@@ -85,26 +85,22 @@ public class MqttHandlerRegistry {
         return matcher.findHandlers(topic);
     }
 
-    public void dispatch(String topic, String payload) {
+    public void dispatch(MqttMessageContext context) {
 
-        List<MqttHandler> handlers = findHandlers(topic);
+        List<MqttHandler> handlers = findHandlers(context.getTopic());
 
         if (handlers == null || handlers.isEmpty()) {
 
-            log.warn("未找到 MQTT Handler，topic: {}", topic);
+            log.warn("未找到 MQTT Handler，topic: {}", context.getTopic());
 
             return;
         }
 
         for (MqttHandler handler : handlers) {
-
             try {
-
-                handler.handle(topic, payload);
-
+                handler.handle(context);
             } catch (Exception e) {
-
-                log.error("MQTT Handler 执行失败，handler: {}, topic: {}", handler.getName(), topic, e);
+                log.error("MQTT Handler 执行失败，handler: {}, topic: {}", handler.getName(), context.getTopic(), e);
             }
         }
     }

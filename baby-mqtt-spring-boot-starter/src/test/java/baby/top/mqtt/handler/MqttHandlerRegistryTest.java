@@ -21,9 +21,7 @@ public class MqttHandlerRegistryTest {
             }
 
             @Override
-            public void handle(
-                    String topic,
-                    String payload) {
+            public void handle(MqttMessageContext context) {
             }
         };
     }

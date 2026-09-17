@@ -1,6 +1,7 @@
 package baby.top.mqtt.autoconfigure;
 
 import baby.top.mqtt.handler.MqttHandlerRegistry;
+import baby.top.mqtt.handler.MqttMessageContext;
 import baby.top.mqtt.properties.BabyMqttProperties;
 import baby.top.mqtt.properties.MqttSubscription;
 import lombok.extern.slf4j.Slf4j;
@@ -66,17 +67,36 @@ public class BabyMqttInboundConfiguration {
 
         return message -> {
 
+            // 获取 MQTT Topic
             Object topicObject = message.getHeaders().get("mqtt_receivedTopic");
 
             String topic = topicObject == null ? null : topicObject.toString();
 
-            Object payloadObject = message.getPayload();
+            // 获取原始 Payload
+            byte[] payload = (byte[]) message.getPayload();
 
-            String payload = payloadObject.toString();
+            // 获取 MQTT QoS
+            Object qosObject = message.getHeaders().get("mqtt_receivedQos");
 
-            log.debug("收到 MQTT 消息，topic: {}", topic);
+            int qos = qosObject instanceof Number ? ((Number) qosObject).intValue() : 0;
 
-            registry.dispatch(topic, payload);
+            // 获取是否为保留消息
+            Object retainedObject = message.getHeaders().get("mqtt_receivedRetained");
+
+            boolean retained = Boolean.TRUE.equals(retainedObject);
+
+            // 获取是否为重复投递
+            Object duplicateObject = message.getHeaders().get("mqtt_receivedDuplicate");
+
+            boolean duplicate = Boolean.TRUE.equals(duplicateObject);
+
+            // 构建 MQTT 消息上下文
+            MqttMessageContext context = new MqttMessageContext(topic, payload, qos, retained, duplicate);
+
+            log.debug("收到 MQTT 消息，topic: {}, qos: {}", topic, qos);
+
+            // 分发消息
+            registry.dispatch(context);
         };
     }
 

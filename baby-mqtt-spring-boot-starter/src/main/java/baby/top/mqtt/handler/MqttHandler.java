@@ -22,8 +22,7 @@ public interface MqttHandler {
     /**
      * 处理 MQTT 消息。
      *
-     * @param topic   MQTT Topic
-     * @param payload MQTT 消息内容
+     * @param context  mqtt 接受到的原始数据
      */
-    void handle(String topic, String payload);
+    void handle(MqttMessageContext context);
 }
