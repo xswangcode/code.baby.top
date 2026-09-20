@@ -80,7 +80,7 @@ public class DefaultBabyMqttConnectionManager implements BabyMqttConnectionManag
 
         this.state = MqttConnectionState.CONNECTING;
 
-        log.info("Baby MQTT 开始连接，state: {} -> {}", oldState, MqttConnectionState.CONNECTING);
+        log.debug("[BABY-MQTT] MQTT 正在连接, state={}->{}", oldState, MqttConnectionState.CONNECTING);
     }
 
     @Override
@@ -144,7 +144,7 @@ public class DefaultBabyMqttConnectionManager implements BabyMqttConnectionManag
 
         this.state = MqttConnectionState.CONNECTED;
 
-        log.info("Baby MQTT 连接成功，broker: {}，state: {} -> {}", broker, oldState, MqttConnectionState.CONNECTED);
+        log.info("[BABY-MQTT] MQTT 连接成功, broker={}, state={}->{}", broker, oldState, MqttConnectionState.CONNECTED);
 
         MqttConnectionEvent connectionEvent = new MqttConnectionEvent(broker, MqttConnectionState.CONNECTED, null);
 
@@ -183,7 +183,7 @@ public class DefaultBabyMqttConnectionManager implements BabyMqttConnectionManag
 
             this.state = MqttConnectionState.DISCONNECTED;
 
-            log.warn("Baby MQTT 连接断开，broker: {}，state: {} -> {}", broker, oldState, MqttConnectionState.DISCONNECTED, event.getCause());
+            log.warn("[BABY-MQTT] MQTT 连接断开, broker={}, state={}->{}", broker, oldState, MqttConnectionState.DISCONNECTED);
 
             MqttConnectionEvent connectionEvent = new MqttConnectionEvent(broker, MqttConnectionState.DISCONNECTED, event.getCause());
 
@@ -200,7 +200,7 @@ public class DefaultBabyMqttConnectionManager implements BabyMqttConnectionManag
 
         this.state = MqttConnectionState.FAILED;
 
-        log.error("Baby MQTT 连接失败，broker: {}，state: {} -> {}", broker, oldState, MqttConnectionState.FAILED, event.getCause());
+        log.error("[BABY-MQTT] MQTT 连接失败, broker={}, state={}->{}", broker, oldState, MqttConnectionState.FAILED, event.getCause());
 
         MqttConnectionEvent connectionEvent = new MqttConnectionEvent(broker, MqttConnectionState.FAILED, event.getCause());
 
@@ -230,7 +230,7 @@ public class DefaultBabyMqttConnectionManager implements BabyMqttConnectionManag
 
         } catch (Exception e) {
 
-            log.warn("获取 MQTT Broker 地址失败", e);
+            log.warn("[BABY-MQTT] MQTT Broker 地址获取失败", e);
 
             return null;
         }
@@ -249,7 +249,7 @@ public class DefaultBabyMqttConnectionManager implements BabyMqttConnectionManag
 
             } catch (Exception e) {
 
-                log.error("MQTT 连接成功监听器执行异常", e);
+                log.error("[BABY-MQTT] MQTT 连接成功监听器执行失败, listener={}", listener, e);
             }
         }
     }
@@ -267,7 +267,7 @@ public class DefaultBabyMqttConnectionManager implements BabyMqttConnectionManag
 
             } catch (Exception e) {
 
-                log.error("MQTT 连接断开监听器执行异常", e);
+                log.error("[BABY-MQTT] MQTT 连接断开监听器执行失败, listener={}", listener, e);
             }
         }
     }
@@ -285,7 +285,7 @@ public class DefaultBabyMqttConnectionManager implements BabyMqttConnectionManag
 
             } catch (Exception e) {
 
-                log.error("MQTT 连接失败监听器执行异常", e);
+                log.error("[BABY-MQTT] MQTT 连接失败监听器执行失败, listener={}", listener, e);
             }
         }
     }

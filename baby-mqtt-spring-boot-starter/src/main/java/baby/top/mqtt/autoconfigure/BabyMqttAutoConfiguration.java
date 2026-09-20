@@ -33,7 +33,7 @@ import java.util.Map;
  */
 @Slf4j
 @Configuration
-@EnableConfigurationProperties(BabyMqttProperties.class) // 自动配置类显示注册配置文件
+@EnableConfigurationProperties(BabyMqttProperties.class)
 @Import({BabyMqttInboundConfiguration.class})
 @ConditionalOnProperty(prefix = "baby.mqtt", name = "enabled", havingValue = "true", matchIfMissing = false)
 public class BabyMqttAutoConfiguration {
@@ -41,13 +41,18 @@ public class BabyMqttAutoConfiguration {
     private final BabyMqttProperties properties;
 
     public BabyMqttAutoConfiguration(BabyMqttProperties properties) {
-
         this.properties = properties;
     }
 
+    /**
+     * MQTT 配置校验。
+     */
     @PostConstruct
     public void validate() {
+
         validateProperties(properties);
+
+        log.info("[BABY-MQTT] MQTT 配置校验通过, broker={}", properties.getBroker());
     }
 
     /**
@@ -56,8 +61,11 @@ public class BabyMqttAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean
     public BabyMqttClient babyMqttClient(BabyMqttProperties properties) {
+
         BabyMqttClient client = new BabyMqttClient(properties);
+
         client.init();
+
         return client;
     }
 
@@ -67,7 +75,12 @@ public class BabyMqttAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean
     public MqttPahoClientFactory babyMqttClientFactory(BabyMqttClient client) {
-        return client.getClientFactory();
+
+        MqttPahoClientFactory clientFactory = client.getClientFactory();
+
+        log.info("[BABY-MQTT] MqttPahoClientFactory 创建完成");
+
+        return clientFactory;
     }
 
     /**
@@ -87,7 +100,10 @@ public class BabyMqttAutoConfiguration {
         Map<String, MqttHandler> handlerMap = beanFactory.getBeansOfType(MqttHandler.class);
 
         for (MqttHandler handler : handlerMap.values()) {
+
             registry.register(handler);
+
+            log.info("[BABY-MQTT] MQTT Handler 注册完成, handler={}", handler.getClass().getSimpleName());
         }
 
         // 2. 根据配置建立 Topic -> Handler 关联
@@ -96,30 +112,43 @@ public class BabyMqttAutoConfiguration {
             for (MqttSubscription subscription : properties.getSubscriptions()) {
 
                 registry.registerSubscription(subscription.getTopic(), subscription.getHandler());
+
+                log.info("[BABY-MQTT] MQTT Subscription 注册完成, topic={}, handler={}", subscription.getTopic(), subscription.getHandler());
             }
         }
 
-        log.info("Baby MQTT Handler 注册完成，数量: {}", registry.size());
+        log.info("[BABY-MQTT] MqttHandlerRegistry 创建完成, handler数量={}", registry.size());
 
         return registry;
     }
 
+    /**
+     * 创建 MQTT Topic Matcher。
+     */
     @Bean
     @ConditionalOnMissingBean
     public MqttTopicMatcher babyMqttTopicMatcher(BabyMqttProperties properties) {
 
-        if ("list".equalsIgnoreCase(properties.getMatcherType())) {
+        String matcherType = properties.getMatcherType();
 
-            return new ListMqttTopicMatcher();
+        MqttTopicMatcher matcher;
+
+        if ("list".equalsIgnoreCase(matcherType)) {
+
+            matcher = new ListMqttTopicMatcher();
+
+        } else if ("trie".equalsIgnoreCase(matcherType)) {
+
+            matcher = new TrieMqttTopicMatcher();
+
+        } else {
+
+            throw new BabyException("BABY-0002", "不支持的 MQTT Matcher 类型: " + matcherType);
         }
 
+        log.info("[BABY-MQTT] MQTT Topic Matcher 创建完成, type={}", matcherType);
 
-        if ("trie".equalsIgnoreCase(properties.getMatcherType())) {
-
-            return new TrieMqttTopicMatcher();
-        }
-
-        throw new IllegalArgumentException("不支持的 MQTT Matcher 类型: " + properties.getMatcherType());
+        return matcher;
     }
 
     /**
@@ -128,33 +157,58 @@ public class BabyMqttAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean
     public BabyMqttConnectionManager babyMqttConnectionManager() {
-        return new DefaultBabyMqttConnectionManager();
+
+        BabyMqttConnectionManager connectionManager = new DefaultBabyMqttConnectionManager();
+
+        log.info("[BABY-MQTT] MQTT ConnectionManager 创建完成");
+
+        return connectionManager;
     }
 
+    /**
+     * MQTT 连接生命周期监听器。
+     */
     @Bean
     public BabyMqttConnectionLifecycle babyMqttConnectionLifecycle(BabyMqttConnectionManager connectionManager) {
 
-        return new BabyMqttConnectionLifecycle(connectionManager);
+        BabyMqttConnectionLifecycle lifecycle = new BabyMqttConnectionLifecycle(connectionManager);
+
+        log.info("[BABY-MQTT] MQTT ConnectionLifecycle 创建完成");
+
+        return lifecycle;
     }
 
+    /**
+     * 创建 MQTT Template。
+     */
     @Bean
     @ConditionalOnMissingBean
     public BabyMqttTemplate babyMqttTemplate(BabyMqttProperties properties, MqttPahoClientFactory clientFactory) {
         return new BabyMqttTemplate(properties, clientFactory);
     }
 
+    /**
+     * 校验 MQTT 配置。
+     */
     void validateProperties(BabyMqttProperties properties) {
 
         if (properties == null) {
+
+            log.error("[BABY-MQTT] MQTT 配置不能为空");
+
             throw new BabyException("BABY-0002", "MQTT 配置不能为空");
         }
 
         if (properties.getBroker() == null || properties.getBroker().trim().isEmpty()) {
 
+            log.error("[BABY-MQTT] MQTT broker 不能为空");
+
             throw new BabyException("BABY-0002", "MQTT broker 不能为空");
         }
 
         if (properties.getSubscriptions() == null || properties.getSubscriptions().isEmpty()) {
+
+            log.error("[BABY-MQTT] MQTT topics 不能为空");
 
             throw new BabyException("BABY-0002", "MQTT topics 不能为空");
         }
@@ -162,15 +216,22 @@ public class BabyMqttAutoConfiguration {
         for (MqttSubscription subscription : properties.getSubscriptions()) {
 
             if (subscription == null) {
+
+                log.error("[BABY-MQTT] MQTT subscription 不能为空");
+
                 throw new BabyException("BABY-0002", "MQTT subscription 不能为空");
             }
 
             if (subscription.getTopic() == null || subscription.getTopic().trim().isEmpty()) {
 
+                log.error("[BABY-MQTT] MQTT subscription topic 不能为空");
+
                 throw new BabyException("BABY-0002", "MQTT subscription topic 不能为空");
             }
 
             if (subscription.getHandler() == null || subscription.getHandler().trim().isEmpty()) {
+
+                log.error("[BABY-MQTT] MQTT subscription handler 不能为空");
 
                 throw new BabyException("BABY-0002", "MQTT subscription handler 不能为空");
             }
@@ -180,15 +241,21 @@ public class BabyMqttAutoConfiguration {
 
         if (!"list".equalsIgnoreCase(matcherType) && !"trie".equalsIgnoreCase(matcherType)) {
 
+            log.error("[BABY-MQTT] 不支持的 MQTT Matcher 类型, type={}", matcherType);
+
             throw new BabyException("BABY-0002", "不支持的 MQTT Matcher 类型: " + matcherType);
         }
 
         if (properties.getConnectionTimeout() <= 0) {
 
+            log.error("[BABY-MQTT] MQTT connection-timeout 必须大于 0");
+
             throw new BabyException("BABY-0002", "MQTT connection-timeout 必须大于 0");
         }
 
         if (properties.getKeepAlive() <= 0) {
+
+            log.error("[BABY-MQTT] MQTT keep-alive 必须大于 0");
 
             throw new BabyException("BABY-0002", "MQTT keep-alive 必须大于 0");
         }

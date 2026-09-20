@@ -68,12 +68,12 @@ public abstract class AbstractMqttHandler implements MqttHandler {
     /**
      * 异常兜底钩子。
      * <p>
-     * 默认打印日志，子类可覆盖做告警、落库、重试等。
+     * 默认不处理，子类可覆盖做告警、落库、重试等。
      *
      * @param context 出错的上下文
      * @param e       异常
      */
     protected void onError(MqttMessageContext context, Exception e) {
-        // log.error("[{}] 处理消息失败, topic={}", getName(), context.getTopic(), e);
+        // 默认不处理，由子类按业务需求扩展。
     }
 }

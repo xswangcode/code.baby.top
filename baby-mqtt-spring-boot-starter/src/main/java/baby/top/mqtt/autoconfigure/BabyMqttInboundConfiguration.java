@@ -47,14 +47,14 @@ public class BabyMqttInboundConfiguration {
 
         String[] topics = getSubscriptionTopics(properties);
 
-        log.info("创建 MQTT Inbound Adapter，clientId: {}, topics: {}", properties.getClientId(), topics);
-
         MqttPahoMessageDrivenChannelAdapter adapter = new MqttPahoMessageDrivenChannelAdapter(properties.getClientId() + "-inbound", clientFactory, topics);
 
         adapter.setOutputChannel(babyMqttInputChannel);
         DefaultPahoMessageConverter converter = new DefaultPahoMessageConverter();
         converter.setPayloadAsBytes(true);
         adapter.setConverter(converter);
+
+        log.info("[BABY-MQTT] MQTT Inbound Adapter 创建完成, clientId={}, topics={}", properties.getClientId(), topics);
         return adapter;
     }
 
@@ -96,7 +96,7 @@ public class BabyMqttInboundConfiguration {
             // 构建 MQTT 消息上下文
             MqttMessageContext context = new MqttMessageContext(topic, payload, qos, retained, duplicate);
 
-            log.debug("收到 MQTT 消息，topic: {}, qos: {}", topic, qos);
+            log.debug("[BABY-MQTT] MQTT 消息接收, topic={}, qos={}, retained={}, duplicate={}", topic, qos, retained, duplicate);
 
             // 分发消息
             registry.dispatch(context);

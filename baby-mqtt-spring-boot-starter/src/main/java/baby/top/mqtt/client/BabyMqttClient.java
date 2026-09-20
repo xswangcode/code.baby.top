@@ -33,52 +33,33 @@ public class BabyMqttClient {
             return;
         }
 
-        DefaultMqttPahoClientFactory factory =
-                new DefaultMqttPahoClientFactory();
+        DefaultMqttPahoClientFactory factory = new DefaultMqttPahoClientFactory();
 
-        MqttConnectOptions options =
-                new MqttConnectOptions();
+        MqttConnectOptions options = new MqttConnectOptions();
 
-        options.setServerURIs(
-                new String[]{properties.getBroker()}
-        );
+        options.setServerURIs(new String[]{properties.getBroker()});
 
-        options.setAutomaticReconnect(
-                properties.isAutoReconnect()
-        );
+        options.setAutomaticReconnect(properties.isAutoReconnect());
 
-        options.setConnectionTimeout(
-                properties.getConnectionTimeout()
-        );
+        options.setConnectionTimeout(properties.getConnectionTimeout());
 
-        options.setKeepAliveInterval(
-                properties.getKeepAlive()
-        );
+        options.setKeepAliveInterval(properties.getKeepAlive());
 
-        if (properties.getUsername() != null
-                && properties.getUsername().length() > 0) {
+        if (properties.getUsername() != null && properties.getUsername().length() > 0) {
 
-            options.setUserName(
-                    properties.getUsername()
-            );
+            options.setUserName(properties.getUsername());
         }
 
-        if (properties.getPassword() != null
-                && properties.getPassword().length() > 0) {
+        if (properties.getPassword() != null && properties.getPassword().length() > 0) {
 
-            options.setPassword(
-                    properties.getPassword().toCharArray()
-            );
+            options.setPassword(properties.getPassword().toCharArray());
         }
 
         factory.setConnectionOptions(options);
 
         this.clientFactory = factory;
 
-        log.info(
-                "Baby MQTT Paho Client 初始化成功，broker: {}",
-                properties.getBroker()
-        );
+        log.info("[BABY-MQTT] BabyMqttClient 初始化完成, broker={}", properties.getBroker());
     }
 
     /**

@@ -50,7 +50,7 @@ public class MqttHandlerRegistry {
 
         handlerMap.put(handler.getName(), handler);
 
-        log.info("注册 MQTT Handler，name: {}", handler.getName());
+        log.info("[BABY-MQTT] MQTT Handler 注册完成, handler={}", handler.getName());
     }
 
     /**
@@ -76,8 +76,6 @@ public class MqttHandlerRegistry {
         }
 
         matcher.register(topic, handler);
-
-        log.info("注册 MQTT Subscription，topic: {}, handler: {}", topic, handlerName);
     }
 
     public List<MqttHandler> findHandlers(String topic) {
@@ -87,20 +85,38 @@ public class MqttHandlerRegistry {
 
     public void dispatch(MqttMessageContext context) {
 
-        List<MqttHandler> handlers = findHandlers(context.getTopic());
+        if (context == null) {
+            return;
+        }
+
+        String topic = context.getTopic();
+
+        List<MqttHandler> handlers = findHandlers(topic);
 
         if (handlers == null || handlers.isEmpty()) {
 
-            log.warn("未找到 MQTT Handler，topic: {}", context.getTopic());
+            log.warn("[BABY-MQTT] MQTT Handler 未找到, topic={}", topic);
 
             return;
         }
 
         for (MqttHandler handler : handlers) {
+
+            String handlerName = handler.getName();
+
+            log.debug("[BABY-MQTT] MQTT Handler 匹配成功, topic={}, handler={}", topic, handlerName);
+
             try {
+
+                log.debug("[BABY-MQTT] MQTT Handler 执行, topic={}, handler={}", topic, handlerName);
+
                 handler.handle(context);
+
+                log.debug("[BABY-MQTT] MQTT Handler 执行完成, topic={}, handler={}", topic, handlerName);
+
             } catch (Exception e) {
-                log.error("MQTT Handler 执行失败，handler: {}, topic: {}", handler.getName(), context.getTopic(), e);
+
+                log.error("[BABY-MQTT] MQTT Handler 执行失败, topic={}, handler={}", topic, handlerName, e);
             }
         }
     }

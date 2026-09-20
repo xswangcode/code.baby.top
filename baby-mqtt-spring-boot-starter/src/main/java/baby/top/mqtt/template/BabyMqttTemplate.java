@@ -45,11 +45,10 @@ public class BabyMqttTemplate {
             this.messageHandler.start();
 
         } catch (Exception e) {
-
             throw new IllegalStateException("MQTT 出站 Handler 初始化失败", e);
         }
 
-        log.info("Baby MQTT 出站 Handler 初始化成功，clientId: {}", clientId);
+        log.info("[BABY-MQTT] BabyMqttTemplate 创建完成, clientId={}", clientId);
     }
 
     public void publish(String topic, String payload) {
@@ -71,15 +70,15 @@ public class BabyMqttTemplate {
 
         try {
 
-            log.info("开始发送 MQTT 消息，topic: {}", topic);
+            log.debug("[BABY-MQTT] MQTT 消息发布, topic={}, qos={}, retained={}", topic, qos, retained);
 
             messageHandler.handleMessage(message);
 
-            log.info("MQTT 消息发送成功，topic: {}", topic);
+            log.debug("[BABY-MQTT] MQTT 消息发布成功, topic={}, qos={}, retained={}", topic, qos, retained);
 
         } catch (Exception e) {
 
-            log.error("MQTT 消息发送失败，topic: {}，error: {}", topic, e.getMessage(), e);
+            log.error("[BABY-MQTT] MQTT 消息发布失败, topic={}, qos={}, retained={}", topic, qos, retained, e);
 
             throw new IllegalStateException("MQTT 消息发送失败", e);
         }
@@ -93,11 +92,11 @@ public class BabyMqttTemplate {
             try {
                 messageHandler.stop();
 
-                log.info("Baby MQTT 出站 Handler 已停止");
+                log.info("[BABY-MQTT] BabyMqttTemplate 停止完成");
 
             } catch (Exception e) {
 
-                log.warn("Baby MQTT 出站 Handler 停止失败", e);
+                log.warn("[BABY-MQTT] BabyMqttTemplate 停止失败", e);
             }
         }
     }
