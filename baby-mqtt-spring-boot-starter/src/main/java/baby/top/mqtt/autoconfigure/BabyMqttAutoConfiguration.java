@@ -2,6 +2,9 @@ package baby.top.mqtt.autoconfigure;
 
 import baby.top.core.exception.BabyException;
 import baby.top.mqtt.client.BabyMqttClient;
+import baby.top.mqtt.client.BabyMqttConnectionLifecycle;
+import baby.top.mqtt.connection.BabyMqttConnectionManager;
+import baby.top.mqtt.connection.DefaultBabyMqttConnectionManager;
 import baby.top.mqtt.handler.MqttHandler;
 import baby.top.mqtt.handler.MqttHandlerRegistry;
 import baby.top.mqtt.matcher.ListMqttTopicMatcher;
@@ -119,6 +122,20 @@ public class BabyMqttAutoConfiguration {
         throw new IllegalArgumentException("不支持的 MQTT Matcher 类型: " + properties.getMatcherType());
     }
 
+    /**
+     * MQTT 连接管理器。
+     */
+    @Bean
+    @ConditionalOnMissingBean
+    public BabyMqttConnectionManager babyMqttConnectionManager() {
+        return new DefaultBabyMqttConnectionManager();
+    }
+
+    @Bean
+    public BabyMqttConnectionLifecycle babyMqttConnectionLifecycle(BabyMqttConnectionManager connectionManager) {
+
+        return new BabyMqttConnectionLifecycle(connectionManager);
+    }
 
     @Bean
     @ConditionalOnMissingBean
