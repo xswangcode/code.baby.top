@@ -24,5 +24,5 @@ public interface MqttHandler {
      *
      * @param context  mqtt 接受到的原始数据
      */
-    void handle(MqttMessageContext context);
+    void handle(MqttMessageContext context) throws InterruptedException;
 }

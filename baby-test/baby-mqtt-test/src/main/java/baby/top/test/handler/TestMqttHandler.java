@@ -25,11 +25,13 @@ public class TestMqttHandler implements MqttHandler {
 
 
     @Override
-    public void handle(MqttMessageContext context) {
+    public void handle(MqttMessageContext context) throws InterruptedException {
         String topic = context.getTopic();
         byte[] _payload = context.getPayload();
         String payload = new String(_payload, StandardCharsets.UTF_8);
         count++;
-        log.info("count:{}, topic: {}，payload: {}", count, topic, payload);
+        //Thread.sleep(100);
+        if (count % 100 == 0)
+            log.info("count:{}, topic: {}，payload: {}", count, topic, payload);
     }
 }
